@@ -7,7 +7,7 @@ use Illuminate\Database\Migrations\Migration;
 class CreateNotificationsTable extends Migration
 {
     /**
-     * Run the migrations.
+     * Run the migrations for notifications
      *
      * @return void
      */
