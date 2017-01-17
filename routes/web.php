@@ -14,6 +14,9 @@
 Auth::routes();
 
 Route::get('/', 'HomeController@index');
-Route::resource('events', 'EventController', ['only' => [
-    'store', 'show', 'update', 'destroy'
-]]);
+
+Route::group(['prefix' => 'api/v1'], function () {
+    Route::resource('events', 'EventController', ['only' => [
+        'store', 'show', 'update', 'destroy'
+    ]]);
+});

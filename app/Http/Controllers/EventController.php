@@ -7,25 +7,25 @@ use Illuminate\Http\Request;
 class EventController extends Controller
 {
     // POST
-    public function store()
+    public function store(Request $request)
     {
 
     }
 
     // GET
-    public function show()
+    public function show(Request $request, $id)
     {
 
     }
 
     // PUT
-    public function update()
+    public function update(Request $request, $id)
     {
 
     }
 
     // DELETE
-    public function destroy()
+    public function destroy(Request $request, $id)
     {
 
     }
