@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "76036da3b5b55b91dbe1e1affa01bf9e",
+    "content-hash": "88c96e2a04b131c38dcdbeafdab80d5d",
     "packages": [
         {
             "name": "classpreloader/classpreloader",
@@ -690,6 +690,47 @@
                 "time"
             ],
             "time": "2017-01-15T14:47:48+00:00"
+        },
+        {
+            "name": "nicklaw5/larapi",
+            "version": "3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/nicklaw5/Larapi.git",
+                "reference": "c6ca3f2387b5231cd88a3562958f737dd3fbdff3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/nicklaw5/Larapi/zipball/c6ca3f2387b5231cd88a3562958f737dd3fbdff3",
+                "reference": "c6ca3f2387b5231cd88a3562958f737dd3fbdff3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Larapi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicholas Law"
+                }
+            ],
+            "description": "A simple Laravel 5 class for handling json api responses.",
+            "keywords": [
+                "api",
+                "json",
+                "laravel",
+                "response"
+            ],
+            "time": "2016-12-26T08:23:40+00:00"
         },
         {
             "name": "nikic/php-parser",
