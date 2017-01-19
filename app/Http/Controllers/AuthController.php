@@ -75,4 +75,19 @@ class AuthController extends Controller
 
     return $user;
   }
+
+  public function isAuthenticated(Request $request)
+  {
+    $token = $request->header('Authorization');
+    if ($token == NULL) {
+      return Larapi::badRequest("User is not authenticated");
+    }
+
+    $user = User::where('api_token', $token)->first();
+    if ($user == NULL) {
+      return Larapi::badRequest("User is not authenticated");
+    }
+
+    return Larapi::ok("User is authenticated");
+  }
 }

@@ -19,6 +19,7 @@ Route::group(['prefix' => 'auth'], function () {
 	Route::post('signup', 'AuthController@signup');
 	Route::post('signin', 'AuthController@signin');
 	Route::post('signout', 'AuthController@signout');
+	Route::get('check', 'AuthController@isAuthenticated');
 });
 
 Route::group(['prefix' => 'v1'], function () {

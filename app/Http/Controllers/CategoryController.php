@@ -24,7 +24,7 @@ class CategoryController extends Controller
 
     // Create Category
     $category = new Category;
-    $category->name = $request.name;
+    $category->name = $request->name;
     $category->save();
 
     return Larapi::created();
@@ -47,7 +47,7 @@ class CategoryController extends Controller
 
   public function update(Request $request, $id)
   {
-    $user = Auth::guard('api')->user();
+    $user = AuthController::getUser($request);
 
     // If user isn't logged in
     if ($user == NULL) {
@@ -64,7 +64,7 @@ class CategoryController extends Controller
       return Larapi::notFound("Failed to find category");
     }
 
-    $category->name = $request.name;
+    $category->name = $request->name;
     $cateogry->save();
 
     return Larapi::accepted();
@@ -72,7 +72,7 @@ class CategoryController extends Controller
 
   public function destroy(Request $request, $id)
   {
-    $user = Auth::guard('api')->user();
+    $user = AuthController::getUser($request);
 
     // If user isn't logged in
     if ($user == NULL) {
