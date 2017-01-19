@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Larapi;
 
-use App\Http\Event;
+use App\Event;
 
 class EventController extends Controller
 {
@@ -24,14 +24,18 @@ class EventController extends Controller
 		// GET
 		public function show(Request $request, $id)
 		{
-				// I'm not 100% sure, but try:
-				// Event::all();
-		}
-
-		// GET
-		public function showAll(Request $request)
-		{
-
+				if ($id == "all") {
+					$events = Event::all();
+					if (sizeof($events) > 0) {
+						return Larapi::ok($events);
+					}
+					return Larapi::noContent();
+				}
+				$event = Event::find($id);
+				if (sizeof($event) > 0) {
+					return Larapi::noContent();
+				}
+				return Larapi::noContent();
 		}
 
 		// PUT
