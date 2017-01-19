@@ -7,15 +7,16 @@ use Illuminate\Support\Facades\Auth;
 use Larapi;
 
 use App\Event;
+use App\Http\AuthController;
 
 class EventController extends Controller
 {
 		// POST
 		public function store(Request $request)
 		{
-				$user = Auth::user();
-				if ($user === NULL) {
-						return Larapi::forbidden();
+				$user = AuthController::getUser($request);
+				if ($user == NULL) {
+					return Larapi::forbidden();
 				}
 
 				if (!$request->name || !$request->start || !$request->category_id) {
@@ -60,13 +61,18 @@ class EventController extends Controller
 			if (sizeof($event) > 0) {
 				return Larapi::noContent();
 			}
-			
+
 			return Larapi::noContent();
 		}
 
 		// PUT
 		public function update(Request $request, $id)
 		{
+			$user = AuthController::getUser($request);
+			if ($user == NULL) {
+				return Larapi::forbidden();
+			}
+
 			if($id == null) {
 				return Larapi::badRequest();
 			}
@@ -74,16 +80,16 @@ class EventController extends Controller
 			$event = Event::find($id);
 
 			if ($request->name != null) {
-			$event->name = $request->name;
+				$event->name = $request->name;
 			}
 			if ($request->start != null) {
-			$event->start = $request->start;
+				$event->start = $request->start;
 			}
 			if ($request->finish != null) {
-			$event->finish = $request->finish;
+				$event->finish = $request->finish;
 			}
 			if ($request->category_id != null) {
-			$event->category_id = $request->category_id;
+				$event->category_id = $request->category_id;
 			}
 
 			$event->save();
@@ -93,6 +99,11 @@ class EventController extends Controller
 		// DELETE
 		public function destroy($id)
 		{
+			$user = AuthController::getUser($request);
+			if ($user == NULL) {
+				return Larapi::forbidden();
+			}
+
 			if($id == null) {
 				return Larapi::badRequest();
 			}

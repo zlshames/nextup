@@ -10,13 +10,3 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-Auth::routes();
-
-Route::get('/', 'HomeController@index');
-
-Route::group(['prefix' => 'api/v1'], function () {
-    Route::resource('events', 'EventController', ['only' => [
-        'store', 'show', 'update', 'destroy'
-    ]]);
-});
