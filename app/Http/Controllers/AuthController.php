@@ -61,7 +61,7 @@ class AuthController extends Controller
     return redirect('/');
   }
 
-  public function getUser(Request $request)
+  public static function getUser(Request $request)
   {
     $token = $request->header('Authorization');
     if ($token == NULL) {

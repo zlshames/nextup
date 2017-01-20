@@ -7,97 +7,98 @@ use Illuminate\Support\Facades\Auth;
 use Larapi;
 
 use App\Notification;
-use App\Http\AuthController;
+use App\Http\Controllers\AuthController;
 
 class NotificationController extends Controller
 {
-    public function store(Request $request)
-    {
-		$user = AuthController::getUser($request);
-		if ($user == NULL) {
-			return Larapi::forbidden();
-		}
+  public function store(Request $request)
+  {
+  	$user = AuthController::getUser($request);
+  	if ($user == NULL) {
+  		return Larapi::forbidden();
+  	}
 
-		if (!$request->event_id || !$request->notify_at) {
-			return Larapi::badRequest();
-		}
+  	if (!$request->event_id || !$request->notify_at) {
+  		return Larapi::badRequest();
+  	}
 
-		$notification = new Notification;
+  	$notification = new Notification;
 
-		$notification->event_id = $request->event_id;
-		$notification->user_id = $request->user_id;
-		$notification->notify_at =  $request->notify_at;
+  	$notification->event_id = $request->event_id;
+  	$notification->user_id = $request->user_id;
+  	$notification->notify_at =  $request->notify_at;
 
-		if($request->finish) {
-			$notification->finish = $request->finish;
-		}
+  	if($request->finish) {
+  		$notification->finish = $request->finish;
+  	}
 
-		$notification->save();
-		return Larapi::created($notification);
-    }
+  	$notification->save();
+  	return Larapi::created($notification);
+  }
 
-    public function show($id)
-    {
-        if($id == null) {
-			return Larapi::badRequest();
-		}
+  public function show($id)
+  {
+  	if ($id == "all") {
+  		$notifications = Notification::all();
+  		return Larapi::ok($notifications);
+  	}
 
-		if ($id == "all") {
-			$notifications = Notification::all();
-			if (sizeof($notifications) > 0) {
-				return Larapi::ok($notifications);
-			}
+    if (!is_numeric($id)) {
+  		return Larapi::badRequest("The ID must be numeric");
+  	}
 
-			return Larapi::noContent();
-		}
+  	$notification = Event::find($id);
+  	if ($notification == NULL) {
+  		return Larapi::badRequest("Unable to find Notification by ID");
+  	}
 
-		if (!is_numeric($id)) {
-			return Larapi::badRequest();
-		}
+  	return Larapi::ok($notification);
+  }
 
-		$notification = Event::find($id);
-		if (sizeof($notification) > 0) {
-			return Larapi::noContent();
-		}
+  public function update(Request $request, $id)
+  {
+  	$user = AuthController::getUser($request);
+  	if ($user == NULL) {
+  		return Larapi::forbidden();
+  	}
 
-		return Larapi::noContent();
-	}
+    if (!is_numeric($id)) {
+  		return Larapi::badRequest("The ID must be numeric");
+  	}
 
-    public function update(Request $request, $id)
-    {
-		$user = AuthController::getUser($request);
-		if ($user == NULL) {
-			return Larapi::forbidden();
-		}
+  	$notification = Notification::find($id);
+    if ($notification == NULL) {
+  		return Larapi::badRequest("Unable to find Notification by ID");
+  	}
 
-		if($id == null) {
-			return Larapi::badRequest();
-		}
+  	if ($request->notify_at != null) {
+  		$notification->notify_at = $request->notify_at;
+  	}
 
-		$notification = Notification::find($id);
+  	$notification->save();
+  	return Larapi::accepted($notification);
+  }
 
-		if ($request->notify_at != null) {
-			$notification->notify_at = $request->notify_at;
-		}
+  public function destroy(Request $request, $id)
+  {
+    $user = AuthController::getUser($request);
+  	if ($user == NULL) {
+  		return Larapi::forbidden();
+  	}
 
-		$notification->save();
-		return Larapi::accepted($notification);
-    }
+  	if (!is_numeric($id)) {
+  		return Larapi::badRequest("The ID must be numeric");
+  	}
 
-    public function destroy(Request $request, $id)
-    {
-        $user = AuthController::getUser($request);
-		if ($user == NULL) {
-			return Larapi::forbidden();
-		}
+    // MUST CHECK IF USER IS OWNER OF NOTIFICATION
 
-		if($id == null) {
-			return Larapi::badRequest();
-		}
+  	$notification = Notification::find($id);
+    if ($notification == NULL) {
+  		return Larapi::badRequest("Unable to find Notification by ID");
+  	}
 
-		$notification = Notification::find($id);
-		$notification->delete();
+  	$notification->delete();
 
-        return Larapi::ok($notification);
-    }
+    return Larapi::ok($notification);
+  }
 }

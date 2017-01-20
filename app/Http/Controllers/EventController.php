@@ -7,119 +7,123 @@ use Illuminate\Support\Facades\Auth;
 use Larapi;
 
 use App\Event;
-use App\Http\AuthController;
+use App\Http\Controllers\AuthController;
 
 class EventController extends Controller
 {
-		// POST
-		public function store(Request $request)
-		{
-			$user = AuthController::getUser($request);
-			if ($user == NULL) {
-				return Larapi::forbidden();
-			}
-
-			if (!$request->name || !$request->start || !$request->category_id) {
-				return Larapi::badRequest();
-			}
-			$event = new Event;
-
-			$event->name = $request->name;
-			$event->start = $request->start;
-			$event->category_id =  $request->category_id;
-
-			if($request->finish) {
-				$event->finish = $request->finish;
-			}
-
-			$event->save();
-			return Larapi::created($event);
+	// POST
+	public function store(Request $request)
+	{
+		$user = AuthController::getUser($request);
+		if ($user == NULL) {
+			return Larapi::forbidden();
 		}
 
-		// GET
-		public function show($id)
-		{
-			if($id == null) {
-				return Larapi::badRequest();
-			}
-
-			if ($id == "all") {
-				$events = Event::all();
-				if (sizeof($events) > 0) {
-					return Larapi::ok($events);
-				}
-
-				return Larapi::noContent();
-			}
-
-			if (!is_numeric($id)) {
-				return Larapi::badRequest();
-			}
-
-			$event = Event::find($id);
-			if (sizeof($event) > 0) {
-				return Larapi::noContent();
-			}
-
-			return Larapi::noContent();
+		if (!$request->name || !$request->start || !$request->category_id) {
+			return Larapi::badRequest();
 		}
 
-		public function showByDate($date) {
-			if ($date == null) {
-				return Larapi::badRequest();
-			}
-			$events = Event::where('start', $date)
-				->orderBy('start', 'desc')->get();
+		$event = new Event;
 
+		$event->name = $request->name;
+		$event->start = $request->start;
+		$event->category_id =  $request->category_id;
+
+		if ($request->finish) {
+			$event->finish = $request->finish;
+		}
+
+		$event->save();
+		return Larapi::created($event);
+	}
+
+	// GET
+	public function show($id)
+	{
+		if ($id == "all") {
+			$events = Event::all();
 			return Larapi::ok($events);
 		}
 
-		// PUT
-		public function update(Request $request, $id)
-		{
-			$user = AuthController::getUser($request);
-			if ($user == NULL) {
-				return Larapi::forbidden();
-			}
-
-			if($id == null) {
-				return Larapi::badRequest();
-			}
-
-			$event = Event::find($id);
-
-			if ($request->name != null) {
-				$event->name = $request->name;
-			}
-			if ($request->start != null) {
-				$event->start = $request->start;
-			}
-			if ($request->finish != null) {
-				$event->finish = $request->finish;
-			}
-			if ($request->category_id != null) {
-				$event->category_id = $request->category_id;
-			}
-
-			$event->save();
-			return Larapi::accepted($event);
+		if (!is_numeric($id)) {
+			return Larapi::badRequest("The ID must be numeric.");
 		}
 
-		// DELETE
-		public function destroy(Request $request, $id)
-		{
-			$user = AuthController::getUser($request);
-			if ($user == NULL) {
-				return Larapi::forbidden();
-			}
-
-			if($id == null) {
-				return Larapi::badRequest();
-			}
-
-			$event = Event::find($id);
-			$event->delete();
-
-			return Larapi::ok($event);
+		$event = Event::find($id);
+		if ($event == NULL) {
+			Larapi::badRequest("Unable to find Event by ID.");
 		}
+
+		return Larapi::ok($event);
+	}
+
+	public function showByDate($date) {
+		if ($date == null) {
+			return Larapi::badRequest();
+		}
+		$events = Event::where('start', $date)
+			->orderBy('start', 'desc')->get();
+
+		return Larapi::ok($events);
+	}
+
+	// PUT
+	public function update(Request $request, $id)
+	{
+		$user = AuthController::getUser($request);
+		if ($user == NULL) {
+			return Larapi::forbidden();
+		}
+
+		if (!is_numeric($id)) {
+			return Larapi::badRequest("The ID must be numeric.");
+		}
+
+		// MUST CHECK IF USER IS OWNER OF EVENT
+
+		$event = Event::find($id);
+		if ($event == NULL) {
+  		return Larapi::badRequest("Unable to find Event by ID.");
+  	}
+
+		if ($request->name != null) {
+			$event->name = $request->name;
+		}
+		if ($request->start != null) {
+			$event->start = $request->start;
+		}
+		if ($request->finish != null) {
+			$event->finish = $request->finish;
+		}
+		if ($request->category_id != null) {
+			$event->category_id = $request->category_id;
+		}
+
+		$event->save();
+		return Larapi::accepted($event);
+	}
+
+	// DELETE
+	public function destroy(Request $request, $id)
+	{
+		$user = AuthController::getUser($request);
+		if ($user == NULL) {
+			return Larapi::forbidden();
+		}
+
+		if (!is_numeric($id)) {
+			return Larapi::badRequest("The ID must be numeric.");
+		}
+
+		// MUST CHECK IF USER IS OWNER OF EVENT
+
+		$event = Event::find($id);
+		if ($event == NULL) {
+  		return Larapi::badRequest("Unable to find Event by ID.");
+  	}
+
+		$event->delete();
+
+		return Larapi::ok($event);
+	}
 }
