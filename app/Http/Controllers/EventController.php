@@ -51,7 +51,7 @@ class EventController extends Controller
 
 		$event = Event::find($id);
 		if ($event == NULL) {
-			Larapi::badRequest("Unable to find Event by ID.");
+			Larapi::notFound("Unable to find Event by ID.");
 		}
 
 		return Larapi::ok($event);
@@ -83,7 +83,7 @@ class EventController extends Controller
 
 		$event = Event::find($id);
 		if ($event == NULL) {
-  		return Larapi::badRequest("Unable to find Event by ID.");
+  		return Larapi::notFound("Unable to find Event by ID.");
   	}
 
 		if ($request->name != null) {
@@ -119,7 +119,7 @@ class EventController extends Controller
 
 		$event = Event::find($id);
 		if ($event == NULL) {
-  		return Larapi::badRequest("Unable to find Event by ID.");
+  		return Larapi::notFound("Unable to find Event by ID.");
   	}
 
 		$event->delete();

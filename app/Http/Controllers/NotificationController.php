@@ -44,12 +44,12 @@ class NotificationController extends Controller
   	}
 
     if (!is_numeric($id)) {
-  		return Larapi::badRequest("The ID must be numeric");
+  		return Larapi::badRequest("The ID must be numeric.");
   	}
 
   	$notification = Event::find($id);
   	if ($notification == NULL) {
-  		return Larapi::badRequest("Unable to find Notification by ID");
+  		return Larapi::notFound("Unable to find Notification by ID.");
   	}
 
   	return Larapi::ok($notification);
@@ -63,12 +63,12 @@ class NotificationController extends Controller
   	}
 
     if (!is_numeric($id)) {
-  		return Larapi::badRequest("The ID must be numeric");
+  		return Larapi::badRequest("The ID must be numeric.");
   	}
 
   	$notification = Notification::find($id);
     if ($notification == NULL) {
-  		return Larapi::badRequest("Unable to find Notification by ID");
+  		return Larapi::notFound("Unable to find Notification by ID.");
   	}
 
   	if ($request->notify_at != null) {
@@ -87,14 +87,14 @@ class NotificationController extends Controller
   	}
 
   	if (!is_numeric($id)) {
-  		return Larapi::badRequest("The ID must be numeric");
+  		return Larapi::badRequest("The ID must be numeric.");
   	}
 
     // MUST CHECK IF USER IS OWNER OF NOTIFICATION
 
   	$notification = Notification::find($id);
     if ($notification == NULL) {
-  		return Larapi::badRequest("Unable to find Notification by ID");
+  		return Larapi::notFound("Unable to find Notification by ID.");
   	}
 
   	$notification->delete();
