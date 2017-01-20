@@ -14,27 +14,26 @@ class EventController extends Controller
 		// POST
 		public function store(Request $request)
 		{
-				$user = AuthController::getUser($request);
-				if ($user == NULL) {
-					return Larapi::forbidden();
-				}
+			$user = AuthController::getUser($request);
+			if ($user == NULL) {
+				return Larapi::forbidden();
+			}
 
-				if (!$request->name || !$request->start || !$request->category_id) {
-					return Larapi::badRequest();
-				}
+			if (!$request->name || !$request->start || !$request->category_id) {
+				return Larapi::badRequest();
+			}
+			$event = new Event;
 
-				$event = new Event;
+			$event->name = $request->name;
+			$event->start = $request->start;
+			$event->category_id =  $request->category_id;
 
-				$event->name = $request->name;
-				$event->start = $request->start;
-				$event->category_id =  $request->category_id;
+			if($request->finish) {
+				$event->finish = $request->finish;
+			}
 
-				if($request->finish) {
-					$event->finish = $request->finish;
-				}
-
-				$event->save();
-				return Larapi::created($event);
+			$event->save();
+			return Larapi::created($event);
 		}
 
 		// GET
@@ -63,6 +62,16 @@ class EventController extends Controller
 			}
 
 			return Larapi::noContent();
+		}
+
+		public function showByDate($date) {
+			if ($date == null) {
+				return Larapi::badRequest();
+			}
+			$events = Event::where('start', $date)
+				->orderBy('start', 'desc')->get();
+
+			return Larapi::ok($events);
 		}
 
 		// PUT
@@ -97,7 +106,7 @@ class EventController extends Controller
 		}
 
 		// DELETE
-		public function destroy($id)
+		public function destroy(Request $request, $id)
 		{
 			$user = AuthController::getUser($request);
 			if ($user == NULL) {
@@ -110,5 +119,7 @@ class EventController extends Controller
 
 			$event = Event::find($id);
 			$event->delete();
+
+			return Larapi::ok($event);
 		}
 }

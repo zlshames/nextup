@@ -26,10 +26,14 @@ Route::group(['prefix' => 'api/v1'], function () {
 	]]);
 
 	Route::resource('events', 'EventController', ['only' => [
-		'store', 'show', 'update', 'destroy'
+		'store', 'show', 'showByDate', 'update', 'destroy'
 	]]);
 
 	Route::resource('categories', 'CategoryController', ['only' => [
+		'store', 'show', 'update', 'destroy'
+	]]);
+
+	Route:: resource('notifications', 'NotificationController', ['only' => [
 		'store', 'show', 'update', 'destroy'
 	]]);
 });
