@@ -7,8 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Category extends Model
 {
   public static $validation_rules = [
-    'name' => 'required|alpha_num|unique:categories|between:3,25',
-    'test' => 'required'
+    'name' => 'required|alpha_num|unique:categories|between:3,25'
   ];
 
   public static $validation_messages = [

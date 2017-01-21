@@ -8,6 +8,7 @@ use App\Http\Controllers\AuthController;
 use App\Category;
 use Larapi;
 use Validator;
+use App\Http\Utils\Helpers;
 
 class CategoryController extends Controller
 {
@@ -61,6 +62,7 @@ class CategoryController extends Controller
     return Larapi::ok($category->name);
   }
 
+  // USING POSTMAN, DATA MUST BE SENT AS x-www-form-urlencoded
   public function update(Request $request, $id)
   {
     $user = AuthController::getUser($request);
@@ -95,7 +97,7 @@ class CategoryController extends Controller
     }
 
     $category->name = $request->name;
-    $cateogry->save();
+    $category->save();
 
     return Larapi::accepted();
   }
@@ -124,6 +126,6 @@ class CategoryController extends Controller
 
     $category->delete();
 
-    return Larapi::noContent();
+    return Larapi::ok();
   }
 }
