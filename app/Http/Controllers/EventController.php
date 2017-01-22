@@ -25,6 +25,7 @@ class EventController extends Controller
 
 		$event = new Event;
 
+		$event->user_id = $user->id;
 		$event->name = $request->name;
 		$event->start = $request->start;
 		$event->category_id =  $request->category_id;
