@@ -9,6 +9,18 @@ use Larapi;
 
 class AuthController extends Controller
 {
+  public function login()
+  {
+    // Return $dates array to view
+    return view('auth/login');
+  }
+
+  public function register()
+  {
+    // Return $dates array to view
+    return view('auth/register');
+  }
+
   public function signup(Request $request)
   {
     // Check if user is already logged in

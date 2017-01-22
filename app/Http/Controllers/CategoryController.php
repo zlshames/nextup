@@ -12,6 +12,30 @@ use App\Http\Utils\Helpers;
 
 class CategoryController extends Controller
 {
+  public function all(Request $request)
+  {
+    $categories = $this->show($request, 'all');
+    $res = $categories->getData()->response;
+
+    // Return $dates array to view
+    return view('categories', [
+      'single'     => false,
+      'categories' => $res
+    ]);
+  }
+
+  public function single(Request $request, $id)
+  {
+    $category = $this->show($request, $id);
+    $res = $category->getData()->response;
+
+    // Return $dates array to view
+    return view('categories', [
+      'single'   => true,
+      'category' => $res
+    ]);
+  }
+
   public function store(Request $request)
   {
     $user = AuthController::getUser($request);
@@ -59,7 +83,7 @@ class CategoryController extends Controller
       return Larapi::notFound("Failed to find category.");
     }
 
-    return Larapi::ok($category->name);
+    return Larapi::ok($category);
   }
 
   // USING POSTMAN, DATA MUST BE SENT AS x-www-form-urlencoded

@@ -11,8 +11,22 @@
 |
 */
 
+// Home route
 Route::get('/', 'HomeController@index');
 
+// Category routes
+Route::get('/categories', 'CategoryController@all');
+Route::get('/categories/{id}', 'CategoryController@single');
+
+// User routes
+Route::get('/user', 'UserController@index');
+Route::get('/user/{id}', 'UserController@other');
+
+// Auth Routes (Front-end)
+Route::get('/login', 'AuthController@login');
+Route::get('/register', 'AuthController@register');
+
+// API Auth routes
 Route::group(['prefix' => 'api/auth'], function () {
 	Route::post('signup', 'AuthController@signup');
 	Route::post('signin', 'AuthController@signin');
@@ -20,6 +34,7 @@ Route::group(['prefix' => 'api/auth'], function () {
 	Route::get('check', 'AuthController@isAuthenticated');
 });
 
+// API routes
 Route::group(['prefix' => 'api/v1'], function () {
 	Route::resource('events', 'UserController', ['only' => [
 		'show', 'update', 'destroy'
