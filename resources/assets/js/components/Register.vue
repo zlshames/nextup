@@ -5,36 +5,56 @@
         <div class="panel panel-default">
           <div class="panel-heading">Register</div>
           <div class="panel-body">
-            <form class="form-horizontal" role="form" method="POST" action="/register">
-              <div class="form-group">
+            <div v-if="errors.main !== null" class="alert alert-danger">
+							<strong>Error!</strong> {{ errors.main }}
+						</div>
+
+            <form class="form-horizontal" novalidate v-on:submit.prevent="submitForm">
+              <div v-bind:class="['form-group', (errors.username !== null) ? 'has-error' : '']">
                 <label for="username" class="col-md-4 control-label">Username</label>
 
                 <div class="col-md-6">
-                  <input id="username" type="text" class="form-control" name="username" value="" required autofocus>
+                  <input id="username" type="text" class="form-control" v-model="username" required autofocus>
+
+                  <span v-if="errors.username !== null" class="help-block">
+					        	<strong>{{ errors.username }}</strong>
+					     		</span>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div v-bind:class="['form-group', (errors.email !== null) ? 'has-error' : '']">
                 <label for="email" class="col-md-4 control-label">E-Mail Address</label>
 
                 <div class="col-md-6">
-                  <input id="email" type="email" class="form-control" name="email" value="" required>
+                  <input id="email" type="email" class="form-control" v-model="email" required>
+
+                  <span v-if="errors.email !== null" class="help-block">
+					        	<strong>{{ errors.email }}</strong>
+					     		</span>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div v-bind:class="['form-group', (errors.password !== null) ? 'has-error' : '']">
                 <label for="password" class="col-md-4 control-label">Password</label>
 
                 <div class="col-md-6">
-                  <input id="password" type="password" class="form-control" name="password" required>
+                  <input id="password" type="password" class="form-control" v-model="password" required>
+
+                  <span v-if="errors.password !== null" class="help-block">
+					        	<strong>{{ errors.password }}</strong>
+					     		</span>
                 </div>
               </div>
 
-              <div class="form-group">
+              <div v-bind:class="['form-group', (errors.confirmation !== null) ? 'has-error' : '']">
                 <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
 
                 <div class="col-md-6">
-                  <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+                  <input id="password-confirm" type="password" class="form-control" v-model="confirmation" required>
+
+                  <span v-if="errors.confirmation !== null" class="help-block">
+					        	<strong>{{ errors.confirmation }}</strong>
+					     		</span>
                 </div>
               </div>
 
@@ -54,19 +74,80 @@
 </template>
 
 <script>
+	import request from 'superagent'
 
-// <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-
-// After Input
-// @if ($errors->has('password'))
-//     <span class="help-block">
-//         <strong>{{ $errors->first('password') }}</strong>
-//     </span>
-// @endif
-
-  export default {
+	export default {
+		data: function () {
+			return {
+				errors: {
+					main: null,
+          username: null,
+					email: null,
+					password: null,
+          confirmation: null
+				},
+        username: '',
+				email: '',
+				password: '',
+        confirmation: ''
+			}
+		},
     mounted() {
       console.log('Register component mounted.')
+    },
+    methods: {
+			submitForm() {
+				let hasError = false;
+
+				// Clear errors
+				this.errors.main = null
+        this.errors.username = null
+				this.errors.email = null
+				this.errors.password = null
+        this.errors.confirmation = null
+
+				// Validation
+				if (this.email == '' || this.email.length < 6 || this.email.indexOf('@') < 0) {
+					this.errors.email = 'Please enter a valid email'
+					hasError = true
+				}
+
+        if (this.username == '' || this.username.length < 3) {
+					this.errors.username = 'Username must be at least 3 characters.'
+					hasError = true
+				}
+
+				if (this.password == '' || this.password.length < 6) {
+					this.errors.password = 'Password must be at least 6 characters.'
+					hasError = true
+				}
+
+        if (this.confirmation !== this.password) {
+					this.errors.confirmation = 'Confirmation does not match password.'
+					hasError = true
+				}
+
+				// Check hasError so all errors are shown
+				if (hasError) {
+					return;
+				}
+
+				// Send HTTP request
+        request
+          .post('/api/auth/signup')
+          .send({
+            username: this.username,
+            email: this.email,
+            password: this.password,
+            password_confirm: this.confirmation
+          })
+          .then((success) => {
+            location.href = '/login'
+          })
+          .catch((error) => {
+            this.errors.main = error.response.body.error
+        })
+			}
     }
   }
 </script>

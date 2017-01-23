@@ -24,10 +24,26 @@
         </ul>
 
         <!-- Right Side Of Navbar -->
-        <ul class="nav navbar-nav navbar-right">
+        <ul v-if="!loggedIn" class="nav navbar-nav navbar-right">
           <!-- Authentication Links -->
           <li><a href="/login">Login</a></li>
           <li><a href="/register">Register</a></li>
+        </ul>
+
+        <ul v-if="loggedIn" class="nav navbar-nav navbar-right">
+          <!-- Authenticated Links -->
+          <li><a href="/create-event">Create Event</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+              {{ username }}
+              <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="/user">My Account</a></li>
+              <li role="separator" class="divider"></li>
+              <li><a href="#" @click="logout">Logout</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
     </div>
@@ -35,9 +51,36 @@
 </template>
 
 <script>
-  export default {
-    mounted() {
-      console.log('Navigation component mounted.')
+import storage from '../utils/Storage'
+
+export default {
+  data: function () {
+    return {
+      loggedIn: false,
+      username: '',
+      email: ''
+    }
+  },
+  created() {
+    console.log('Navigation component mounted.')
+
+    // Check if api_token is available
+    const token = storage.getItem('api_token')
+    const username = storage.getItem('username')
+    const email = storage.getItem('email')
+
+    if (token !== null && username !== null && email !== null) {
+      this.loggedIn = true
+      this.username = username
+      this.email = email
+    }
+  },
+  methods: {
+    logout() {
+      storage.removeItem('api_token')
+
+      location.href = '/'
     }
   }
+}
 </script>

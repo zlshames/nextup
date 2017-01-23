@@ -16,6 +16,7 @@ require('./bootstrap');
 Vue.component('navigation', require('./components/Navigation.vue'));
 Vue.component('login', require('./components/Login.vue'));
 Vue.component('register', require('./components/Register.vue'));
+Vue.component('user', require('./components/User.vue'));
 
 const app = new Vue({
     el: '#app'

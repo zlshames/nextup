@@ -54,6 +54,7 @@
 
 <script>
 	import request from 'superagent'
+  import storage from '../utils/Storage'
 
 	export default {
 		data: function () {
@@ -69,6 +70,9 @@
 		},
     mounted() {
       console.log('Login component mounted.')
+
+      const email = storage.getItem('email')
+      this.email = (email !== null) ? email : ''
     },
     methods: {
 			submitForm() {
@@ -102,7 +106,15 @@
             email: this.email,
             password: this.password
           })
-          .then((sucess) => {
+          .then((success) => {
+            const token = success.body.response.api_token
+            const username = success.body.response.username
+            const email = success.body.response.email
+
+            storage.setItem('api_token', token)
+            storage.setItem('username', username)
+            storage.setItem('email', email)
+
             location.href = '/'
           })
           .catch((error) => {

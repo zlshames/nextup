@@ -60,7 +60,11 @@ class AuthController extends Controller
     // Check if passwords match
     if (Hash::check($request->password, $user->password)) {
       // Return api_token in JSON(?)
-      $data = ['api_token' => $user->api_token];
+      $data = [
+        'username'  => $user->username,
+        'email'     => $user->email,
+        'api_token' => $user->api_token
+      ];
       return Larapi::ok($data);
     }
 
