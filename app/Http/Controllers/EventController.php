@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Larapi;
+use Validator;
 
 use App\Event;
+use App\Category;
 use App\Http\Controllers\AuthController;
 
 class EventController extends Controller
@@ -19,20 +21,27 @@ class EventController extends Controller
 			return Larapi::forbidden();
 		}
 
-		if (!$request->name || !$request->start || !$request->category_id) {
-			return Larapi::badRequest();
-		}
+		$validator = Validator::make(
+      $request->all(),
+      Event::$validation_rules,
+      Event::$validation_messages
+    );
+
+    if ($validator->fails()) {
+      return Larapi::badRequest($validator->messages()->toArray());
+    }
 
 		$event = new Event;
 
 		$event->user_id = $user->id;
 		$event->name = $request->name;
 		$event->start = $request->start;
-		$event->category_id =  $request->category_id;
 
 		if ($request->finish) {
 			$event->finish = $request->finish;
 		}
+
+		$event->category_id = $request->category_id;
 
 		$event->save();
 		return Larapi::created($event);
@@ -80,23 +89,35 @@ class EventController extends Controller
 			return Larapi::badRequest("The ID must be numeric.");
 		}
 
-		// MUST CHECK IF USER IS OWNER OF EVENT
+		$validator = Validator::make(
+      $request->all(),
+      Event::$validation_update_rules,
+      Event::$validation_messages
+    );
+
+    if ($validator->fails()) {
+      return Larapi::badRequest($validator->messages()->toArray());
+    }
 
 		$event = Event::find($id);
 		if ($event == NULL) {
   		return Larapi::notFound("Unable to find Event by ID.");
   	}
 
-		if ($request->name != null) {
+		if ($user->id !== $event->user_id) {
+			return Larapi::unauthorized('You must be the owner of the event to edit it.');
+		}
+
+		if ($request->name) {
 			$event->name = $request->name;
 		}
-		if ($request->start != null) {
+		if ($request->start) {
 			$event->start = $request->start;
 		}
-		if ($request->finish != null) {
+		if ($request->finish) {
 			$event->finish = $request->finish;
 		}
-		if ($request->category_id != null) {
+		if ($request->category_id) {
 			$event->category_id = $request->category_id;
 		}
 
@@ -116,12 +137,14 @@ class EventController extends Controller
 			return Larapi::badRequest("The ID must be numeric.");
 		}
 
-		// MUST CHECK IF USER IS OWNER OF EVENT
-
 		$event = Event::find($id);
 		if ($event == NULL) {
   		return Larapi::notFound("Unable to find Event by ID.");
   	}
+
+		if ($user->id !== $event->user_id) {
+			return Larapi::unauthorized('You must be the owner of the event to delete it.');
+		}
 
 		$event->delete();
 

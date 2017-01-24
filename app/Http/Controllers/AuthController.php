@@ -86,7 +86,7 @@ class AuthController extends Controller
 
     $user = User::where('api_token', $token)->first();
     if ($user == NULL) {
-      return Larapi::badRequest("Invalid authorization token provided");
+      return NULL;
     }
 
     return $user;
