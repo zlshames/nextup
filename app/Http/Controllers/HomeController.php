@@ -7,41 +7,58 @@ use DateInterval;
 
 use Illuminate\Http\Request;
 
+use App\Event;
+
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
-    {
-        //$this->middleware('auth');
-    }
+	public function index(Request $request)
+	{
+		// Create a 'week''
+		$week = array();
+		// Days can be customized
+		$days = $request->input('days') ? $request->input('days') : 7;
 
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        // Get current date
-        $currDate = new DateTime();
-        // Insert today (Format: January 1, 2017)
-        $dates = array($currDate->format('F j, Y'));
+		// Add dates to weekly array
+		$tempDate = new DateTime();
+		for ($i = 0; $i < $days; $i++) {
+			if ($i !== 0) {
+				$tempDate->add(new DateInterval('P1D'));
+			}
+			
+			array_push($week, array($tempDate->format('F j, Y')));
+		}
 
-        // Insert the next 6 days
-        for ($i = 0; $i < 6; $i++) {
-            // P1D == 'Plus 1 Day'
-            $currDate->add(new DateInterval('P1D'));
-            // Add new date
-            array_push($dates, $currDate->format('F j, Y'));
-        }
+		// Set/Declare current and last days of the week
+		$currDate = new DateTime();
+		$lastDate = new DateTime();
+		$lastDate->add(new DateInterval('P' . ($days - 1) . 'D'));
 
-        // Return $dates array to view
-        return view('home', [
-          'dates' => $dates
-        ]);
-    }
+		// Get events for the week
+		$events = Event::whereBetween('start', [$currDate, $lastDate])
+			->oldest('start')
+			->get();
+
+		// Iterate over each 'day' of the week
+		for ($i = 0; $i < sizeof($week); $i++) {
+			$wDate = new DateTime($week[$i][0]);
+
+			// Iterate over events and insert where dates match
+			foreach ($events as $event) {
+				$eDate = new DateTime($event->start);
+
+				if ($eDate->format('F j, Y') == $wDate->format('F j, Y')) {
+					array_push($week[$i], json_encode([
+						'name' => $event->name,
+						'start' => $event->start,
+						'category' => $event->category_id
+					]));
+				}
+			}
+		}
+
+		// Return $week array to view
+		return view('home', [
+			'week' => $week
+		]);
+	}
 }
