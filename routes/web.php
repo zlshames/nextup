@@ -39,7 +39,8 @@ Route::group(['prefix' => 'api/auth'], function () {
 
 // API routes
 Route::group(['prefix' => 'api/v1'], function () {
-	Route::resource('events', 'UserController', ['only' => [
+	Route::get('/users/{username}/events', 'UserController@events');
+	Route::resource('users', 'UserController', ['only' => [
 		'show', 'update', 'destroy'
 	]]);
 

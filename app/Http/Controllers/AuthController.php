@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\User;
 use Larapi;
+use Validator;
 
 class AuthController extends Controller
 {
@@ -29,9 +30,14 @@ class AuthController extends Controller
       return Larapi::forbidden('You are already registered');
     }
 
-    // Return if passwords do no match
-    if ($request->password !== $request->password_confirm) {
-      return Larapi::badRequest("Passwords do not match");
+    $validator = Validator::make(
+      $request->all(),
+      User::$validation_rules,
+      User::$validation_messages
+    );
+
+    if ($validator->fails()) {
+      return Larapi::badRequest($validator->messages()->toArray());
     }
 
     // Create new user

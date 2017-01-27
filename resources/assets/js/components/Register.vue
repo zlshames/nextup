@@ -139,15 +139,34 @@
             username: this.username,
             email: this.email,
             password: this.password,
-            password_confirm: this.confirmation
+            password_confirmation: this.confirmation
           })
           .then((success) => {
             location.href = '/login'
           })
           .catch((error) => {
-            this.errors.main = error.response.body.error
+            this.handleErrors(error)
         })
-			}
+			},
+      handleErrors(error) {
+        // Handle status errors
+        if (!error.response.body.success) {
+          if (error.status == 403) {
+            this.errors.main = 'You are forbidden to do this.'
+          }
+        }
+
+        // Handle form errors
+        if (error.response.body.errors) {
+          const errors = error.response.body.errors
+
+          this.errors.username = (errors.username) ? errors.username[0] : null
+          this.errors.email = (errors.email) ? errors.email[0] : null
+          this.errors.password = (errors.password) ? errors.password[0] : null
+        } else {
+          this.errors.main = 'An unknown error occured.'
+        }
+      }
     }
   }
 </script>
