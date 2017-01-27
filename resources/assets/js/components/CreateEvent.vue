@@ -5,7 +5,7 @@
         <div class="panel panel-default">
           <div class="panel-heading">Create Event</div>
           <div class="panel-body">
-						<div v-if="errors.main !== null" class="alert alert-danger">
+            <div v-if="errors.main !== null" class="alert alert-danger">
 							<strong>Error!</strong> {{ errors.main }}
 						</div>
 
@@ -90,7 +90,12 @@
         category: ''
 			}
 		},
-    mounted() {
+    created() {
+      // Redirect to login if no api_token found
+      if (storage.getItem('api_token') == null) {
+        location.href = '/login'
+      }
+
       console.log('Create Event component mounted.')
     },
     methods: {
@@ -139,10 +144,29 @@
             location.href = '/'
           })
           .catch((error) => {
-            console.log(error.response)
-            this.errors.main = error.response.body.error
+            this.handleErrors(error);           
         })
-			}
+			},
+      handleErrors(error) {
+        // Handle status errors
+        if (!error.response.body.success) {
+          if (error.status == 403) {
+            this.errors.main = 'You must be authenticated to create an event.'
+          }
+        }
+
+        // Handle form errors
+        if (error.response.body.errors) {
+          const errors = error.response.body.errors
+
+          this.errors.name = (errors.name) ? errors.name[0] : null
+          this.errors.start = (errors.start) ? errors.start[0] : null
+          this.errors.end = (errors.end) ? errors.end[0] : null
+          this.errors.category = (errors.category_id) ? errors.category_id[0] : null
+        } else {
+          this.errors.main = 'An unknown error occured.'
+        }
+      }
     }
   }
 </script>
