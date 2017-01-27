@@ -16,7 +16,14 @@ class HomeController extends Controller
 		// Create a 'week''
 		$week = array();
 		// Days can be customized
-		$days = $request->input('days') ? $request->input('days') : 7;
+		$days = 7;
+		if ($request->input('days') !== null) {
+			if (is_numeric($request->input('days'))) {
+				if ($request->input('days') > 0) {
+					$days = $request->input('days');
+				}
+			}
+		}
 
 		// Add dates to weekly array
 		$tempDate = new DateTime();
@@ -31,7 +38,7 @@ class HomeController extends Controller
 		// Set/Declare current and last days of the week
 		$currDate = new DateTime();
 		$lastDate = new DateTime();
-		$lastDate->add(new DateInterval('P' . ($days - 1) . 'D'));
+		$lastDate->add(new DateInterval('P' . $days . 'D'));
 
 		// Get events for the week
 		$events = Event::whereBetween('start', [$currDate, $lastDate])

@@ -13,6 +13,10 @@ use App\Http\Controllers\AuthController;
 
 class EventController extends Controller
 {
+	public function createEvent(Request $request) {
+		return view('create-event');
+	}
+
 	// POST
 	public function store(Request $request)
 	{

@@ -14,6 +14,9 @@
 // Home route
 Route::get('/', 'HomeController@index');
 
+// Event routes
+Route::get('/create-event', 'EventController@createEvent');
+
 // Category routes
 Route::get('/categories', 'CategoryController@all');
 Route::get('/categories/{id}', 'CategoryController@single');
