@@ -35,6 +35,7 @@ class EventController extends Controller
       return Larapi::badRequest($validator->messages()->toArray());
     }
 
+		$category = Category::where('name', $request->category)->first();
 		$event = new Event;
 
 		$event->user_id = $user->id;
@@ -45,7 +46,7 @@ class EventController extends Controller
 			$event->finish = $request->finish;
 		}
 
-		$event->category_id = $request->category_id;
+		$event->category_id = $category->id;
 
 		$event->save();
 		return Larapi::created($event);

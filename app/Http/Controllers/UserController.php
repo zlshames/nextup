@@ -37,7 +37,7 @@ class UserController extends Controller
 		}
 
     $events = Event::where('user_id', $user->id)
-    ->orderBy('start', 'asc')
+    ->orderBy('start', 'desc')
     ->get();
 
 		if ($events == NULL) {

@@ -70,7 +70,13 @@ class CategoryController extends Controller
   {
     if ($id == "all") {
       $categories = Category::all();
-      return Larapi::ok($categories);
+      $output = array();
+
+      foreach ($categories as $i) {
+        array_push($output, $i->name);
+      }
+
+      return Larapi::ok($output);
     }
 
     // Validate ID

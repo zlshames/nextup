@@ -26,7 +26,6 @@
                 <label for="start" class="col-md-4 control-label">Start Date</label>
                 <div class="col-md-6">
                   <input id="start" type="text" class="form-control" v-model="start" required>
-
 									<span v-if="errors.start !== null" class="help-block">
 					        	<strong>{{ errors.start }}</strong>
 					     		</span>
@@ -47,7 +46,11 @@
               <div v-bind:class="['form-group', (errors.category !== null) ? 'has-error' : '']">
                 <label for="category" class="col-md-4 control-label">Category</label>
                 <div class="col-md-6">
-                  <input id="category" type="text" class="form-control" v-model="category" required>
+                  <v-select 
+                    :options="categories"
+                    v-model="category"
+                    placeholder="Select a Category">
+                  </v-select>
 
 									<span v-if="errors.category !== null" class="help-block">
 					        	<strong>{{ errors.category }}</strong>
@@ -73,8 +76,12 @@
 <script>
 	import request from 'superagent'
   import storage from '../utils/Storage'
+  import vSelect from 'vue-multiselect'
 
 	export default {
+    components: {
+      vSelect
+    },
 		data: function () {
 			return {
 				errors: {
@@ -87,7 +94,8 @@
 				name: '',
 				start: '',
         end: '',
-        category: ''
+        category: null,
+        categories: []
 			}
 		},
     created() {
@@ -97,6 +105,8 @@
       }
 
       console.log('Create Event component mounted.')
+
+      this.fetchCategories()
     },
     methods: {
 			submitForm() {
@@ -120,7 +130,7 @@
 					hasError = true
 				}
 
-        if (this.category == '') {
+        if (this.category == null) {
 					this.errors.category = 'Please select a category.'
 					hasError = true
 				}
@@ -138,12 +148,13 @@
             name: this.name,
             start: this.start,
             finish: this.end,
-            category_id: this.category
+            category: this.category
           })
           .then((success) => {
             location.href = '/'
           })
           .catch((error) => {
+            console.log(error.response)
             this.handleErrors(error);           
         })
 			},
@@ -162,10 +173,24 @@
           this.errors.name = (errors.name) ? errors.name[0] : null
           this.errors.start = (errors.start) ? errors.start[0] : null
           this.errors.end = (errors.end) ? errors.end[0] : null
-          this.errors.category = (errors.category_id) ? errors.category_id[0] : null
+          this.errors.category = (errors.category) ? errors.category[0] : null
         } else {
           this.errors.main = 'An unknown error occured.'
         }
+      },
+      fetchCategories() {
+        request
+          .get('/api/v1/categories/all')
+          .then((success) => {
+            const categories = success.body.response
+
+            for (let i = 0; i < categories.length; i++) {
+              this.categories.push(categories[i])
+            }
+          })
+          .catch((error) => {
+            console.log(error.response);           
+        })
       }
     }
   }
