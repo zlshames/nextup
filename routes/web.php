@@ -18,8 +18,9 @@ Route::get('/', 'HomeController@index');
 Route::get('/create-event', 'EventController@createEvent');
 
 // Category routes
+Route::get('/create-category', 'CategoryController@createCategory');
 Route::get('/categories', 'CategoryController@all');
-Route::get('/categories/{id}', 'CategoryController@single');
+Route::get('/categories/{name}', 'CategoryController@single');
 
 // User routes
 Route::get('/user', 'UserController@index');

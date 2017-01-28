@@ -18,6 +18,7 @@ Vue.component('login', require('./components/Login.vue'));
 Vue.component('register', require('./components/Register.vue'));
 Vue.component('user', require('./components/User.vue'));
 Vue.component('create-event', require('./components/CreateEvent.vue'));
+Vue.component('create-category', require('./components/CreateCategory.vue'));
 
 const app = new Vue({
     el: '#app'

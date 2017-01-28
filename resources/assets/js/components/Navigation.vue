@@ -32,6 +32,7 @@
 
         <ul v-if="loggedIn" class="nav navbar-nav navbar-right">
           <!-- Authenticated Links -->
+          <li v-if="username == 'zlshames'"><a href="/create-category">Create Category</a></li>
           <li><a href="/create-event">Create Event</a></li>
           <li class="dropdown">
             <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">

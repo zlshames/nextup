@@ -10,13 +10,26 @@
               @foreach ($categories as $cat)
                   <div class="panel panel-default">
                       <div class="panel-body">
-                          <a href="/categories/{{ $cat->id }}">{{ $cat->name }}</a>
+                          <a href="/categories/{{ $cat }}">{{ $cat }}</a>
                       </div>
                   </div>
               @endforeach
             @else
-              <h3 style="text-align: center;">{{ $category->name }}</h3>
-            @endif
+							@if ($category !== null)
+              	<h3 style="text-align: center;">{{ $category->name }}</h3>
+
+								@for ($i = 0; $i < count($events); $i++)
+									<div class="panel panel-default">
+										<div class="panel-heading">{{ $events[$i]->start }}</div>
+										<div class="panel-body">
+											{{ $events[$i]->name }}
+										</div>
+									</div>
+								@endfor
+							@else
+								<h3 style="text-align: center;">Category Not Found</h3>
+							@endif
+						@endif
         </div>
     </div>
 </div>

@@ -6,12 +6,17 @@ use Illuminate\Http\Request;
 
 use App\Http\Controllers\AuthController;
 use App\Category;
+use App\Event;
 use Larapi;
 use Validator;
 use App\Http\Utils\Helpers;
 
 class CategoryController extends Controller
 {
+  public function createCategory(Request $request) {
+		return view('create-category');
+	}
+
   public function all(Request $request)
   {
     $categories = $this->show($request, 'all');
@@ -24,15 +29,22 @@ class CategoryController extends Controller
     ]);
   }
 
-  public function single(Request $request, $id)
+  public function single(Request $request, $name)
   {
-    $category = $this->show($request, $id);
-    $res = $category->getData()->response;
+    $category = Category::where('name', $name)->first();
+    $events = array();
+
+    if ($category !== null) {
+      $events = Event::where('category_id', $category->id)
+        ->orderBy('start', 'desc')
+        ->get();
+    }
 
     // Return $dates array to view
     return view('categories', [
       'single'   => true,
-      'category' => $res
+      'category' => $category,
+      'events'   => $events
     ]);
   }
 
